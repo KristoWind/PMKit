@@ -1,10 +1,10 @@
-# PMKit:
+# PMKit
 
 PMKit
 
 
 
-## Handig: 
+## Handig
 
 ### Als je ooit de wachtwoord wil resetten van een PI
 
