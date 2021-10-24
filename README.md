@@ -1,9 +1,12 @@
-# PMKit
+# PMKit:
 
 PMKit
 
 
-**Als je ooit de wachtwoord wil resetten van een PI**
+
+## Handig: 
+
+### Als je ooit de wachtwoord wil resetten van een PI
 
 edit op de sdcard deel ROOTFS
 
@@ -15,4 +18,7 @@ verander de line die begint met pi naar dit:
 
 dit reset de wachtwoord naar de standaard:
 
-`usr: pi | pswd: raspberry`
+```
+usr: pi 
+pswd: raspberry`
+```
