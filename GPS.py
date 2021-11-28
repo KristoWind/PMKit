@@ -5,6 +5,10 @@ import serial
 import time
 import csv
 
+## Threads for blinking LED's
+import threading
+import sys
+
 ## Sense hat inits
 from sense_hat import SenseHat
 
@@ -21,13 +25,14 @@ rec_buff = ''
 rec_buff2 = ''
 time_count = 0
 
-
+starting = 0
 ## Patterns for LED Matrix
 
 X = [255, 0, 0]  # Red
 O = [0, 0, 0]  # White
 L = [0, 255, 0]  # Lime
 G = [0, 100, 0] # Green
+
 
 question_mark = [
 	O, O, O, X, X, O, O, O,
@@ -62,7 +67,42 @@ fault = [
 	X, X, X, X, X, X, X, X,
 ]
 
+class StopThread(StopIteration): pass
 
+threading.SystemExit = SystemExit, StopThread
+
+class Thread2(threading.Thread):
+
+    def stop(self):
+        self.__stop = True
+
+    def _bootstrap(self):
+        if threading._trace_hook is not None:
+            raise ValueError('Cannot run thread with tracing!')
+        self.__stop = False
+        sys.settrace(self.__trace)
+        super()._bootstrap()
+
+    def __trace(self, frame, event, arg):
+        if self.__stop:
+            raise StopThread()
+        return self.__trace
+
+def led_pulse():
+	while True:
+		for i in range(0, 255):
+			AR = i
+			Y = [AR, AR, 0]  # Yellow
+			for ffs in range(8):
+				for z in range(8):
+					sense.set_pixel(ffs, z, Y)
+
+		for i in range(255, 0, -1):
+			AR = i
+			Y = [AR, AR, 0]  # Yellow
+			for ra in range(8):
+				for z in range(8):
+					sense.set_pixel(ra, z, Y)
 
 def send_at(command,back,timeout):
 	rec_buff = ''
@@ -119,6 +159,8 @@ def get_gps_position():
 
 
 def power_on(power_key):
+	flashing_thread = Thread2(target=led_pulse)
+	flashing_thread.start()
 	print('SIM7600X is starting:')
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setwarnings(False)
@@ -130,6 +172,8 @@ def power_on(power_key):
 	time.sleep(20)
 	ser.flushInput()
 	print('SIM7600X is ready')
+	flashing_thread.stop()
+
 
 def power_down(power_key):
 	print('SIM7600X is loging off:')
@@ -144,11 +188,12 @@ try:
 	power_on(power_key)
 	get_gps_position()
 	power_down(power_key)
+
+
 except:
 	if ser != None:
 		ser.close()
 	power_down(power_key)
-
 	GPIO.cleanup()
 if ser != None:
 		ser.close()
