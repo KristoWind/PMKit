@@ -19,6 +19,8 @@ verander de line die begint met pi naar dit:
 dit reset de wachtwoord naar de standaard:
 
 ```
-usr: pi 
-pswd: raspberry`
+usr: pi
+```
+```
+pswd: raspberry
 ```
