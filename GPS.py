@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# -*- coding:utf-8 -*-
+#TODO fix better comments.
 import RPi.GPIO as GPIO
 import serial
 import time
@@ -154,9 +153,10 @@ def get_gps_position():
             answer = 0
             if ',,,,,,' in rec_buff:
                 print('GPS is not ready')
-            sense.set_pixels(question_mark)
-            rec_null = False
-            time.sleep(1)
+                sense.set_pixels(question_mark)
+				#TODO fix question mark when there is no GPS data
+                rec_null = False
+                time.sleep(1)
         else:
             print('error %d'%answer)
             rec_buff = ''
