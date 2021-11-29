@@ -69,28 +69,6 @@ fault = [
     X, X, X, X, X, X, X, X,
 ]
 
-# class StopThread(StopIteration): pass
-#
-# threading.SystemExit = SystemExit, StopThread
-#
-# class Thread2(threading.Thread):
-#
-#     def stop(self):
-#         self.__stop = True
-#
-#     def _bootstrap(self):
-#         if threading._trace_hook is not None:
-#             raise ValueError('Cannot run thread with tracing!')
-#         self.__stop = False
-#         sys.settrace(self.__trace)
-#         super()._bootstrap()
-#
-#     def __trace(self, frame, event, arg):
-#         if self.__stop:
-#             raise StopThread()
-#         return self.__trace
-
-
 class LedThread(Thread):
 
     def __init__(self):
@@ -134,41 +112,6 @@ class LedThread(Thread):
         self._keepgoing = False
 
 
-
-
-# def led_pulse():
-# 	while True:
-# 		for i in range(0, 255):
-# 			AR = i
-# 			Y = [AR, AR, 0]  # Yellow
-# 			for ffs in range(8):
-# 				for z in range(8):
-# 					sense.set_pixel(ffs, z, Y)
-#
-# 		for i in range(255, 0, -1):
-# 			AR = i
-# 			Y = [AR, AR, 0]  # Yellow
-# 			for ra in range(8):
-# 				for z in range(8):
-# 					sense.set_pixel(ra, z, Y)
-# 		# elif color == "red":
-# 		# 	for i in range(0, 255):
-# 		# 		AR = i
-# 		# 		Y = [AR, 0, 0]  # Red
-# 		# 		for ffs in range(8):
-# 		# 			for z in range(8):
-# 		# 				sense.set_pixel(ffs, z, Y)
-# 		#
-# 		# 	for i in range(255, 0, -1):
-# 		# 		AR = i
-# 		# 		Y = [AR, 0, 0]  # Red
-# 		# 		for ra in range(8):
-# 		# 			for z in range(8):
-# 		# 				sense.set_pixel(ra, z, Y)
-# 		#
-# 		# else:
-# 		# 	break
-
 def send_at(command,back,timeout):
     rec_buff = ''
     ser.write((command+'\r\n').encode())
@@ -211,8 +154,9 @@ def get_gps_position():
             answer = 0
             if ',,,,,,' in rec_buff:
                 print('GPS is not ready')
-                rec_null = False
-                time.sleep(1)
+            sense.set_pixels(question_mark)
+            rec_null = False
+            time.sleep(1)
         else:
             print('error %d'%answer)
             rec_buff = ''
