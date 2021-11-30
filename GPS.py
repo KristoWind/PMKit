@@ -146,12 +146,12 @@ def get_gps_position():
     print('Start GPS session...')
     rec_buff = ''
     send_at('AT+CGPS=1,1','OK',1)
-    time.sleep(2)
+    time.sleep(0.2)
     while rec_null:
         answer = send_at('AT+CGPSINFO','+CGPSINFO: ',1)
         if 1 == answer:
             answer = 0
-            if ',,,,,,' in rec_buff:
+            if ',,,,,,,,' in rec_buff:
                 print('GPS is not ready')
                 sense.set_pixels(question_mark)
 				#TODO fix question mark when there is no GPS data
@@ -162,7 +162,7 @@ def get_gps_position():
             rec_buff = ''
             send_at('AT+CGPS=0','OK',1)
             return False
-        time.sleep(1.5)
+        time.sleep(0.1)
 
 
 
