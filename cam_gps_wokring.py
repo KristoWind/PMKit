@@ -27,36 +27,6 @@ starting = 0
 
 camera = PiCamera()
 
-# Camera Thread
-# class CameraThread(Thread):
-#
-#
-# 	def __init__(self):
-# 		super(CameraThread, self).__init__()
-# 		self.switch = None
-# 		self._keepgoing = True
-#
-# 	def run(self):
-# 		while (self._keepgoing):
-# 			with picamera.PiCamera() as camera:
-# 				camera.resolution = (1280, 720)
-# 				camera.framerate = 30
-# 				camera.annotate_background = picamera.Color('black')
-# 				camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-# 				if self.switch == 1:
-# 					# Using .mjpeg for more bandwidth and resolution
-# 					camera.start_recording('fucking_hell.h264', format='h264')
-# 					start = dt.datetime.now()
-# 					camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-#
-#
-# 	def stop(self,):
-# 		with picamera.PiCamera() as camera:
-# 			camera.stop_recording()
-# 		self._keepgoing = False
-
-# Sense HAT led's Thread
-
 class LedThread(Thread):
 
     def __init__(self):
@@ -208,8 +178,6 @@ def power_down(power_key):
     GPIO.output(power_key,GPIO.LOW)
     time.sleep(18)
     print('Good bye')
-
-
 
 
 try:
