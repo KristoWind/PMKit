@@ -1,6 +1,3 @@
-import os
-import subprocess
-
 import RPi.GPIO as GPIO
 import serial, time, csv
 from picamera import PiCamera
