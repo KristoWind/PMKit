@@ -1,23 +1,24 @@
-#TODO fix better comments.
+import os
+import subprocess
+
 import RPi.GPIO as GPIO
-import serial
-import time
-import csv
+import serial, time, csv
+from picamera import PiCamera
+import datetime as dt
 
-## Threads for blinking LED's
+from ledmatrix import question_mark, green_checkmark
 
-#import threading
+# Import threading
 from threading import Thread
-import sys
 
-## Sense hat inits
+# Sense hat inits
 from sense_hat import SenseHat
 
+# Sense hat initialisation
 sense = SenseHat()
 sense.set_rotation(180)
 
-## Serial stuff
-
+## Serial stuff for GPS module
 ser = serial.Serial('/dev/ttyS0',115200)
 ser.flushInput()
 
@@ -25,48 +26,39 @@ power_key = 6
 rec_buff = ''
 rec_buff2 = ''
 time_count = 0
-
 starting = 0
-## Patterns for LED Matrix
 
-X = [255, 0, 0]  # Red
-O = [0, 0, 0]  # White
-L = [0, 255, 0]  # Lime
-G = [0, 100, 0] # Green
+camera = PiCamera()
 
+# Camera Thread
+# class CameraThread(Thread):
+#
+#
+# 	def __init__(self):
+# 		super(CameraThread, self).__init__()
+# 		self.switch = None
+# 		self._keepgoing = True
+#
+# 	def run(self):
+# 		while (self._keepgoing):
+# 			with picamera.PiCamera() as camera:
+# 				camera.resolution = (1280, 720)
+# 				camera.framerate = 30
+# 				camera.annotate_background = picamera.Color('black')
+# 				camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+# 				if self.switch == 1:
+# 					# Using .mjpeg for more bandwidth and resolution
+# 					camera.start_recording('fucking_hell.h264', format='h264')
+# 					start = dt.datetime.now()
+# 					camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#
+#
+# 	def stop(self,):
+# 		with picamera.PiCamera() as camera:
+# 			camera.stop_recording()
+# 		self._keepgoing = False
 
-question_mark = [
-    O, O, O, X, X, O, O, O,
-    O, O, X, O, O, X, O, O,
-    O, O, O, O, O, X, O, O,
-    O, O, O, O, X, O, O, O,
-    O, O, O, X, O, O, O, O,
-    O, O, O, X, O, O, O, O,
-    O, O, O, O, O, O, O, O,
-    O, O, O, X, O, O, O, O
-]
-
-green_checkmark = [
-    O, O, O, O, O, O, O, O,
-    O, O, O, O, O, O, L, O,
-    O, O, O, O, O, L, G, O,
-    O, O, O, O, O, L, G, O,
-    O, G, L, O, L, G, O, O,
-    O, O, G, L, G, O, O, O,
-    O, O, O, G, O, O, O, O,
-    O, O, O, O, O, O, O, O
-]
-
-fault = [
-    X, X, X, X, X, X, X, X,
-    X, X, X, X, X, X, X, X,
-    X, X, X, X, X, X, X, X,
-    X, X, X, X, X, X, X, X,
-    X, X, X, X, X, X, X, X,
-    X, X, X, X, X, X, X, X,
-    X, X, X, X, X, X, X, X,
-    X, X, X, X, X, X, X, X,
-]
+# Sense HAT led's Thread
 
 class LedThread(Thread):
 
@@ -77,46 +69,65 @@ class LedThread(Thread):
 
     def run(self):
         while (self._keepgoing):
+            # If you set color to yellow
             if self.variable == "yellow":
+                # Fade in
                 for i in range(0, 255):
-                    AR = i
-                    Y = [AR, AR, 0]  # Yellow
-                    for ffs in range(8):
-                        for z in range(8):
-                            sense.set_pixel(ffs, z, Y)
+                    color_intensity = i
+                    color = [color_intensity, color_intensity, 0]  # Yellow
 
+                    # Set all display pixels 8x8
+                    for x_yellow in range(8):
+                        for y_yellow in range(8):
+                            sense.set_pixel(x_yellow, y_yellow, color)
+
+                # Fade out
                 for i in range(255, 0, -1):
-                    AR = i
-                    Y = [AR, AR, 0]  # Yellow
-                    for ra in range(8):
-                        for z in range(8):
-                            sense.set_pixel(ra, z, Y)
+                    color_intensity = i
+                    color = [color_intensity, color_intensity, 0]  # Yellow
 
+                    # Set all display pixels 8x8
+                    for x_yellow2 in range(8):
+                        for y_yellow2 in range(8):
+                            sense.set_pixel(x_yellow2, y_yellow2, color)
+
+
+            # If you set color to red
             elif self.variable == "red":
+                # Fade in
                 for i in range(0, 255):
-                    AR = i
-                    Y = [AR, 0, 0]  # Yellow
-                    for ffs in range(8):
-                        for z in range(8):
-                            sense.set_pixel(ffs, z, Y)
+                    color_intensity = i
+                    color = [color_intensity, 0, 0]  # Red
 
+                    # Set all display pixels 8x8
+                    for x_red in range(8):
+                        for y_red in range(8):
+                            sense.set_pixel(x_red, y_red, color)
+                # Fade out
                 for i in range(255, 0, -1):
-                    AR = i
-                    Y = [AR, 0, 0]  # Yellow
-                    for ra in range(8):
-                        for z in range(8):
-                            sense.set_pixel(ra, z, Y)
+                    color_intensity = i
+                    color = [color_intensity, 0, 0]  # Red
+
+                    # Set all display pixels 8x8
+                    for x_red2 in range(8):
+                        for y_red2 in range(8):
+                            sense.set_pixel(x_red2, y_red2, color)
 
     def stop(self):
         self._keepgoing = False
 
 
+
+# GPS receive and write to csv
+
 def send_at(command,back,timeout):
     rec_buff = ''
     ser.write((command+'\r\n').encode())
     time.sleep(timeout)
+
+
     if ser.inWaiting():
-        time.sleep(0.01 )
+        time.sleep(0.1)
         rec_buff = ser.read(ser.inWaiting())
     if rec_buff != '':
         if back not in rec_buff.decode():
@@ -126,9 +137,9 @@ def send_at(command,back,timeout):
         else:
             print(rec_buff.decode())
 
-            ## Green checkmark for confirmation
+            # Green checkmark for confirmation
             sense.set_pixels(green_checkmark)
-            ## Add the data of GPS to .csv file
+            # Add the data of GPS to .csv file
             with open("test_data.csv", "a") as f:
                 writer = csv.writer(f, delimiter=",")
                 writer.writerow([time.time(),  rec_buff.decode()])
@@ -137,7 +148,6 @@ def send_at(command,back,timeout):
             return 1
     else:
         print('GPS is not ready')
-
         return 0
 
 def get_gps_position():
@@ -154,7 +164,7 @@ def get_gps_position():
             if ',,,,,,,,' in rec_buff:
                 print('GPS is not ready')
                 sense.set_pixels(question_mark)
-				#TODO fix question mark when there is no GPS data
+                #TODO fix question mark when there is no GPS data
                 rec_null = False
                 time.sleep(1)
         else:
@@ -164,16 +174,13 @@ def get_gps_position():
             return False
         time.sleep(0.1)
 
-
-
-
 def power_on(power_key):
     # When powering on start blink in second Thread
-    # flashing_thread = Thread2(target=led_pulse)
-    # flashing_thread.start()
     mythread = LedThread()
     mythread.start()
     mythread.variable = "yellow"
+    print("Recording Started")
+    camera.start_recording('final.h264')
 
     print('SIM7600X is starting:')
     GPIO.setmode(GPIO.BCM)
@@ -188,16 +195,16 @@ def power_on(power_key):
     print('SIM7600X is ready')
 
     # Stop flashing thread
-    # flashing_thread.stop()
     mythread.stop()
 
-
 def power_down(power_key):
-    print('SIM7600X is loging off:')
-
     mythread = LedThread()
     mythread.start()
     mythread.variable = "red"
+    print("Stopped recording")
+    camera.stop_recording()
+
+    print('SIM7600X is loging off:')
 
     GPIO.output(power_key,GPIO.HIGH)
     time.sleep(3)
@@ -205,7 +212,8 @@ def power_down(power_key):
     time.sleep(18)
     print('Good bye')
 
-    mythread.stop()
+
+
 
 try:
     power_on(power_key)
@@ -217,8 +225,6 @@ except:
     if ser != None:
         ser.close()
     power_down(power_key)
-    GPIO.cleanup()
 if ser != None:
         ser.close()
         GPIO.cleanup()
-
