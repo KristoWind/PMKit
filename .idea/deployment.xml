@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="pi@192.168.68.101:22" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="pi@pmkit.local:22" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
       <paths name="Home">
         <serverdata>
@@ -10,6 +10,20 @@
         </serverdata>
       </paths>
       <paths name="pi@192.168.68.101:22">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/pi/Documents/illya_PMkit" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="pi@pmkit.local:22">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/pi/Documents/illya_PMkit" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="pi@pmkit.local:22 password">
         <serverdata>
           <mappings>
             <mapping deploy="/home/pi/Documents/illya_PMkit" local="$PROJECT_DIR$" />

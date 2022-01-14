@@ -1,8 +1,5 @@
 import RPi.GPIO as GPIO
 import serial, time, csv
-from picamera import PiCamera
-import datetime as dt
-
 from ledmatrix import question_mark, green_checkmark
 
 # Import threading
@@ -25,7 +22,9 @@ rec_buff2 = ''
 time_count = 0
 starting = 0
 
-camera = PiCamera()
+
+
+
 
 class LedThread(Thread):
 
@@ -105,16 +104,21 @@ def send_at(command,back,timeout):
             print(rec_buff.decode())
 
             # Green checkmark for confirmation
+            sense.flip_h()
             sense.set_pixels(green_checkmark)
             # Add the data of GPS to .csv file
-            with open("test_data.csv", "a") as f:
+            with open("/media/pi/storage/GPSdata.csv", "a") as f:
                 writer = csv.writer(f, delimiter=",")
+                # TODO change rec_buff naar alleen locatie.
+                # kan met []
                 writer.writerow([time.time(),  rec_buff.decode()])
 
 
             return 1
     else:
-        print('GPS is not ready')
+        # error here
+        #TODO FIX THIS SHIT
+        print('GPS is not ready 1')
         return 0
 
 def get_gps_position():
@@ -122,14 +126,15 @@ def get_gps_position():
     answer = 0
     print('Start GPS session...')
     rec_buff = ''
-    send_at('AT+CGPS=1,1','OK',1)
-    time.sleep(0.2)
+    #send_at('AT+CGPS=1','OK',1)
+    send_at('AT+CGPS=1,1', 'OK', 1)
+    time.sleep(0.5)
     while rec_null:
         answer = send_at('AT+CGPSINFO','+CGPSINFO: ',1)
         if 1 == answer:
             answer = 0
             if ',,,,,,,,' in rec_buff:
-                print('GPS is not ready')
+                print('GPS is not ready 2')
                 sense.set_pixels(question_mark)
                 #TODO fix question mark when there is no GPS data
                 rec_null = False
@@ -146,8 +151,9 @@ def power_on(power_key):
     mythread = LedThread()
     mythread.start()
     mythread.variable = "yellow"
-    print("Recording Started")
-    camera.start_recording('final.h264')
+
+    #print("Recording Started")
+    #camera.start_recording('final3.h264')
 
     print('SIM7600X is starting:')
     GPIO.setmode(GPIO.BCM)
@@ -168,8 +174,8 @@ def power_down(power_key):
     mythread = LedThread()
     mythread.start()
     mythread.variable = "red"
-    print("Stopped recording")
-    camera.stop_recording()
+    #print("Stopped recording")
+    #camera.stop_recording()
 
     print('SIM7600X is loging off:')
 
