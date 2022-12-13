@@ -16,7 +16,7 @@ For this program I'm using python. The GPS is working with the example file from
 
 ## Usefull:
 
-### Converting the ~~fucking~~ .h264 files to mp4
+### Converting the .h264 files to mp4
 
 ```text
 ffmpeg -f lavfi -i aevalsrc=0 -r 30 -i test.h264 -shortest -c:v copy -c:a aac -strict experimental testo.mp4
